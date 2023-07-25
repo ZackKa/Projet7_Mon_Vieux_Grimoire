@@ -5,16 +5,16 @@ const fs = require('fs');
 exports.createBook = (req, res, next) => {
     // console.log("createBook");
     // console.log(req.body);
-    const bookObject = JSON.parse(req.body.book);//On parse l'objet requete
-    delete bookObject._id; //On supprime l'id car generer automatiquement par la base de donnée.
-    delete bookObject._userId;//On supprime le userId car on ne fait pas confiance au client. On utilise celui du token
+    const bookObject = JSON.parse(req.body.book);//On parse l'objet requête.
+    delete bookObject._id; //On supprime l'id car il est généré automatiquement par la base de donnée.
+    delete bookObject._userId;//On supprime le userId car on ne fait pas confiance au client. On utilise celui du token.
     const book = new Book({
         ...bookObject,
-        userId: req.auth.userId, //On récupere userId de la requete
-        imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`//On crée l'url d'image
+        userId: req.auth.userId, //On récupère userId de la requête.
+        imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`//On crée l'url d'image.
     });
 
-    book.save() //On enregistre le livre dans la base
+    book.save() //On enregistre le livre dans la base.
     .then(() => { res.status(201).json({message: 'Livre enregistré !'})})
     .catch(error => {
     console.log("book - create  : ", error );
@@ -24,7 +24,7 @@ exports.createBook = (req, res, next) => {
 
 exports.getOneBook = (req, res, next) => {
     // console.log("getOneBook");
-    //On récupere le livre en fonction de son id
+    //On récupère le livre en fonction de son id.
     Book.findOne({
         _id: req.params.id
     }).then(
@@ -43,17 +43,17 @@ exports.getOneBook = (req, res, next) => {
 };
   
 exports.modifyBook = (req, res, next) => {
-    const bookObject = req.file ? {//On verifie qu'il y'a un objet file
-        ...JSON.parse(req.body.book), //ON recupere l'objet en parsant la chaine de caractere
-        imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}` //On recrée l'url de l'image
-    } : { ...req.body }; // L'opérateur spread recupere les champs de body de la requete
+    const bookObject = req.file ? {//On vérifie qu'il y a un objet file.
+        ...JSON.parse(req.body.book), //On récupère l'objet en parsant la chaine de caractère.
+        imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}` //On recrée l'url de l'image.
+    } : { ...req.body }; // L'opérateur spread récupère les champs de body de la requête.
   
     delete bookObject._userId;
 
     Book.findOne({_id: req.params.id})
         .then((book) => {
-                //On met à jour un livre
-                Book.updateOne({ _id: req.params.id}, { ...bookObject, _id: req.params.id})//On récupere l'element a mettre a jour et avec quel objet avec l'id de la requete
+                //On met à jour un livre.
+                Book.updateOne({ _id: req.params.id}, { ...bookObject, _id: req.params.id})//On récupère l'élément à mettre à jour ainsi que l'objet, avec l'id de la requête.
                 .then(() => res.status(200).json({message : 'Livre modifié!'}))
                 .catch(error => res.status(401).json({ error }));
         })
@@ -63,12 +63,12 @@ exports.modifyBook = (req, res, next) => {
 };
   
 exports.deleteBook = (req, res, next) => {
-    //On verifie l'id du livre cliqué
+    //On vérifie l'id du livre cliqué.
     Book.findOne({ _id: req.params.id})
         .then(book => {
-                const filename = book.imageUrl.split('/images/')[1];//On recupere le nom du fichier autour du repertoire image
-                fs.unlink(`images/${filename}`, () => { //On supprime l'image grace à unlink
-                    //On supprime un livre
+                const filename = book.imageUrl.split('/images/')[1];//On récupère le nom du fichier autour du répertoire image.
+                fs.unlink(`images/${filename}`, () => { //On supprime l'image grace à unlink.
+                    //On supprime un livre.
                     Book.deleteOne({_id: req.params.id})
                         .then(() => { res.status(200).json({message: 'Livre supprimé !'})})
                         .catch(error => res.status(401).json({ error }));
@@ -81,7 +81,7 @@ exports.deleteBook = (req, res, next) => {
   
 exports.getAllBooks = (req, res, next) => {
     // console.log("getAllBooks");
-    //On récupere la liste des livres
+    //On récupère la liste des livres.
     Book.find().then(
         (books) => {
             // console.log("console books",books);
@@ -97,18 +97,18 @@ exports.getAllBooks = (req, res, next) => {
 exports.getBestRatingBooks = (req, res, next) => {
     Book.find()
         .then((books) => {
-        books.sort((a, b) => b.averageRating - a.averageRating); //On trie les livre par ordre décroissant
-        const bestBooks = books.slice(0, 3);//Renvoie un tableau des 3 livres mieux notés
+        books.sort((a, b) => b.averageRating - a.averageRating); //On trie les livre par ordre décroissant.
+        const bestBooks = books.slice(0, 3);//Renvoie un tableau des 3 livres mieux notés.
         res.status(200).json(bestBooks);
         })
         .catch((error) => res.status(400).json({ error }));
 };
 
 exports.sendRate = (req, res, next) => {
-    // Envoyer la nouvelle note
+    // Envoyer la nouvelle note.
     Book.updateOne({ _id: req.params.id }, { $push: { ratings: { userId: req.body.userId, grade: req.body.rating } } }) //On ajoute la note dans ratings
         .then(() => {
-        // Mettre à jour la moyenne
+        // Mettre à jour la moyenne.
         Book.findOne({ _id: req.params.id })
         .then((book) => {
             let totalNote = 0;
@@ -117,9 +117,9 @@ exports.sendRate = (req, res, next) => {
             totalNote += book.ratings[i].grade;
             }
             moyenne = totalNote / book.ratings.length;
-            Book.updateOne({ _id: req.params.id }, { $set: { averageRating: moyenne } }) //ON remplace la moyenne avec la nouvelle
+            Book.updateOne({ _id: req.params.id }, { $set: { averageRating: moyenne } }) //On remplace la moyenne avec la nouvelle.
             .then(() => {
-            // afficher de nouveau le livre
+            // Afficher de nouveau le livre.
             Book.findOne({ _id: req.params.id })
                 .then((book) => {
                 res.status(200).json(book);

@@ -1,10 +1,10 @@
-const express = require('express'); //On appel express pour crée le router
+const express = require('express'); //On appelle express pour créer le router.
 const router = express.Router();
 const auth = require('../middleware/auth');
-const multer = require('../middleware/multer-config'); //Pour gérer les téléchargement de fichier
+const multer = require('../middleware/multer-config'); //Pour gérer les téléchargements de fichiers.
 const bookCtrl = require('../controllers/book');
-const sharp = require('../middleware/sharp'); //Traitement de la taille d'image
-const isOwner = require('../middleware/isowner') //Verifie le propriétaire du livre
+const sharp = require('../middleware/sharp'); //Traitement de la taille d'image.
+const isOwner = require('../middleware/isowner') //Vérifie le propriétaire du livre.
 
 router.get('/', bookCtrl.getAllBooks);
 router.get('/bestrating', bookCtrl.getBestRatingBooks);

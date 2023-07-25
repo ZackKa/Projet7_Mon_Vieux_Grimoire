@@ -35,7 +35,7 @@ const errorHandler = error => {
   }
 };
 
-const server = http.createServer(app); //On passe l'application au server
+const server = http.createServer(app); //On passe l'application au serveur
 
 server.on('error', errorHandler);
 server.on('listening', () => {
