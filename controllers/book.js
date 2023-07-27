@@ -17,7 +17,7 @@ exports.createBook = (req, res, next) => {
     book.save() //On enregistre le livre dans la base.
     .then(() => { res.status(201).json({message: 'Livre enregistré !'})})
     .catch(error => {
-    console.log("book - create  : ", error );
+    console.log("book - createBook  : ", error );
     res.status(500).json("Une erreur est survenue lors de la création d'un livre");
     });
 };
@@ -32,14 +32,9 @@ exports.getOneBook = (req, res, next) => {
             // console.log("recupe 1 objet", book);
             res.status(200).json(book);
         }
-    ).catch(
-        (error) => {
-            // console.log("recupe 2 objet", error); 
-            res.status(404).json({
-            error: error
-        });
-        }
-    );
+    ).catch((error) => {
+        console.log('getOneBook :',error); 
+        res.status(401).json( "Un problème est survenue lors de la mise à jour des livres" )});
 };
   
 exports.modifyBook = (req, res, next) => {
@@ -55,10 +50,13 @@ exports.modifyBook = (req, res, next) => {
                 //On met à jour un livre.
                 Book.updateOne({ _id: req.params.id}, { ...bookObject, _id: req.params.id})//On récupère l'élément à mettre à jour ainsi que l'objet, avec l'id de la requête.
                 .then(() => res.status(200).json({message : 'Livre modifié!'}))
-                .catch(error => res.status(401).json({ error }));
+                .catch((error) => {
+                    console.log('modifyBook : catch 1 :',error); 
+                    res.status(401).json( "Un problème est survenue lors de la suppression" )});
         })
         .catch((error) => {
-            res.status(400).json({ error });
+            console.log('modifyBook : catch 2 :',error);
+            res.status(400).json("Un problème est survenue lors de la modification");
         });
 };
   
@@ -71,12 +69,14 @@ exports.deleteBook = (req, res, next) => {
                     //On supprime un livre.
                     Book.deleteOne({_id: req.params.id})
                         .then(() => { res.status(200).json({message: 'Livre supprimé !'})})
-                        .catch(error => res.status(401).json({ error }));
+                        .catch((error) => {
+                            console.log('deleteBook : catch 1 :',error); 
+                            res.status(401).json( "Un problème est survenue lors de la suppression" )});
                 });
         })
-        .catch( error => {
-            res.status(500).json({ error });
-        });
+        .catch((error) => {
+            console.log('deleteBook : catch 2 :',error); 
+            res.status(500).json( "Un problème est survenue lors de la suppression" )});
 };
   
 exports.getAllBooks = (req, res, next) => {
@@ -84,12 +84,12 @@ exports.getAllBooks = (req, res, next) => {
     //On récupère la liste des livres.
     Book.find().then(
         (books) => {
-            // console.log("console books",books);
+            console.log("console books getAllBooks",books);
             res.status(200).json(books);
             }
     )
     .catch(error => {
-        // console.log("book -getAllBooks : ", error );
+        console.log("book -getAllBooks : ", error );
         res.status(500).json("Une erreur est survenue lors de la récupération des livres");
     });
 };
@@ -101,7 +101,9 @@ exports.getBestRatingBooks = (req, res, next) => {
         const bestBooks = books.slice(0, 3);//Renvoie un tableau des 3 livres mieux notés.
         res.status(200).json(bestBooks);
         })
-        .catch((error) => res.status(400).json({ error }));
+        .catch((error) => {
+            console.log('getBestRatingBooks : catch 1 :',error); 
+            res.status(400).json( "Un problème est survenue lors de la mise à jour des meilleurs livres" )});
 };
 
 exports.sendRate = (req, res, next) => {
@@ -114,7 +116,7 @@ exports.sendRate = (req, res, next) => {
             let totalNote = 0;
             let moyenne = 0;
             for (let i = 0; i < book.ratings.length; i++) {
-            totalNote += book.ratings[i].grade;
+                totalNote += book.ratings[i].grade;
             }
             moyenne = totalNote / book.ratings.length;
             Book.updateOne({ _id: req.params.id }, { $set: { averageRating: moyenne } }) //On remplace la moyenne avec la nouvelle.
@@ -124,11 +126,15 @@ exports.sendRate = (req, res, next) => {
                 .then((book) => {
                 res.status(200).json(book);
                 })
-                .catch((error) => res.status(404).json({ error }));
+                .catch((error) => {
+                    console.log('sendRate : catch 1 :',error); 
+                    res.status(404).json( "Un problème est survenue lors de la mise à jour de la note" )});
             });
         });
         })
         .catch((error) => {
-        res.status(400).json({ error });
+            console.log('sendRate : catch 2 :',error); 
+            res.status(400).json( "Un problème est survenue lors de la mise à jour de la note" )
         });
+
 };

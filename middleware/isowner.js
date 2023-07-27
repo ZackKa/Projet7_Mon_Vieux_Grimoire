@@ -10,6 +10,7 @@ module.exports = (req, res, next) => {
             }
         })
         .catch((error) => {
-            res.status(500).json({ error });
+            console.log("isowner : ", error );
+            res.status(500).json("Une erreur est survenue lors de la vérification des droits");
         });
 };
