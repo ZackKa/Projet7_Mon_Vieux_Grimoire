@@ -17,8 +17,8 @@ exports.createBook = (req, res, next) => {
     book.save() //On enregistre le livre dans la base.
     .then(() => { res.status(201).json({message: 'Livre enregistré !'})})
     .catch(error => {
-    console.log("book - createBook  : ", error );
-    res.status(500).json("Une erreur est survenue lors de la création d'un livre");
+        console.log("book - createBook  : ", error );
+        res.status(500).json("Une erreur est survenue lors de la création d'un livre");
     });
 };
 
@@ -34,7 +34,8 @@ exports.getOneBook = (req, res, next) => {
         }
     ).catch((error) => {
         console.log('getOneBook :',error); 
-        res.status(401).json( "Un problème est survenue lors de la mise à jour des livres" )});
+        res.status(404).json( "Un problème est survenue lors de la mise à jour des livres" )});
+        //404
 };
   
 exports.modifyBook = (req, res, next) => {
@@ -52,11 +53,11 @@ exports.modifyBook = (req, res, next) => {
                 .then(() => res.status(200).json({message : 'Livre modifié!'}))
                 .catch((error) => {
                     console.log('modifyBook : catch 1 :',error); 
-                    res.status(401).json( "Un problème est survenue lors de la suppression" )});
+                    res.status(500).json( "Un problème est survenue lors de la suppression" )});
         })
         .catch((error) => {
             console.log('modifyBook : catch 2 :',error);
-            res.status(400).json("Un problème est survenue lors de la modification");
+            res.status(404).json("Un problème est survenue lors de la modification");
         });
 };
   
@@ -71,12 +72,12 @@ exports.deleteBook = (req, res, next) => {
                         .then(() => { res.status(200).json({message: 'Livre supprimé !'})})
                         .catch((error) => {
                             console.log('deleteBook : catch 1 :',error); 
-                            res.status(401).json( "Un problème est survenue lors de la suppression" )});
+                            res.status(500).json( "Un problème est survenue lors de la suppression" )});
                 });
         })
         .catch((error) => {
             console.log('deleteBook : catch 2 :',error); 
-            res.status(500).json( "Un problème est survenue lors de la suppression" )});
+            res.status(404).json( "Un problème est survenue lors de la suppression" )});
 };
   
 exports.getAllBooks = (req, res, next) => {
@@ -90,7 +91,8 @@ exports.getAllBooks = (req, res, next) => {
     )
     .catch(error => {
         console.log("book -getAllBooks : ", error );
-        res.status(500).json("Une erreur est survenue lors de la récupération des livres");
+        res.status(404).json("Une erreur est survenue lors de la récupération des livres");
+        //400
     });
 };
 
@@ -103,7 +105,7 @@ exports.getBestRatingBooks = (req, res, next) => {
         })
         .catch((error) => {
             console.log('getBestRatingBooks : catch 1 :',error); 
-            res.status(400).json( "Un problème est survenue lors de la mise à jour des meilleurs livres" )});
+            res.status(500).json( "Un problème est survenue lors de la mise à jour des meilleurs livres" )});
 };
 
 exports.sendRate = (req, res, next) => {
@@ -129,12 +131,13 @@ exports.sendRate = (req, res, next) => {
                 .catch((error) => {
                     console.log('sendRate : catch 1 :',error); 
                     res.status(404).json( "Un problème est survenue lors de la mise à jour de la note" )});
+                    //400
             });
         });
         })
         .catch((error) => {
             console.log('sendRate : catch 2 :',error); 
-            res.status(400).json( "Un problème est survenue lors de la mise à jour de la note" )
+            res.status(404).json( "Un problème est survenue lors de la mise à jour de la note" )
         });
 
 };
